@@ -36,9 +36,8 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     async function loadTransactions(): Promise<void> {
       const response = await api.get('/transactions');
-      const { transactionsPararm, balancePararm } = response.data;
 
-      const transactionsFormatted = transactionsPararm.map(
+      const transactionsFormatted = response.data.transactions.map(
         (transaction: Transaction) => ({
           ...transaction,
           formattedValue: formatValue(transaction.value),
@@ -49,9 +48,9 @@ const Dashboard: React.FC = () => {
       );
 
       const balanceFormatted = {
-        income: formatValue(balancePararm.income),
-        outcome: formatValue(balancePararm.income),
-        total: formatValue(balancePararm.income),
+        income: formatValue(response.data.balance.income),
+        outcome: formatValue(response.data.balance.income),
+        total: formatValue(response.data.balance.income),
       };
 
       setTransactions(transactionsFormatted);
@@ -105,8 +104,10 @@ const Dashboard: React.FC = () => {
                 <tr key={transaction.id}>
                   <td className="title">{transaction.title}</td>
                   <td className={transaction.type}>
-                    {transaction.type === 'outcome' && '-'}
-                    {transaction.formattedValue}
+                    {transaction.type === 'outcome' &&
+                      `- ${transaction.formattedValue}`}
+                    {transaction.type === 'income' &&
+                      transaction.formattedValue}
                   </td>
                   <td>{transaction.category.title}</td>
                   <td>{transaction.formattedDate}</td>
